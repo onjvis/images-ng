@@ -1,0 +1,145 @@
+<div class="main-container">
+  <mat-card class="main-card">
+    <mat-card-content>
+      <div class="main-card__header">
+        <h1>Histogram comparison</h1>
+        <mat-icon
+          matTooltip="Start by uploading an image. Then select comparison parameters (each visible form field is required). Check if the image was uploaded correctly. Submit a form and wait for the results."
+          matTooltipPosition="after">
+          help_outline
+        </mat-icon>
+      </div>
+    </mat-card-content>
+
+    <div class="main-card__row">
+      <mat-card class="child-card upload-image-card">
+        <mat-card-content>
+          <div class="child-card__header">
+            <h2>Upload an image</h2>
+            <input type="file" class="file-upload" (change)="handleUpload($event)">
+          </div>
+        </mat-card-content>
+
+        <mat-divider></mat-divider>
+
+        <form [formGroup]="form">
+          <div class="upload-image-card__form--container">
+            <div class="upload-image-card__form--row">
+              <mat-form-field appearance="fill">
+                <mat-label>Comparison method</mat-label>
+                <mat-select formControlName="method" (valueChange)="onMethodChanged($event)">
+                  <mat-option *ngFor="let method of methods" [value]="method.value">
+                    {{ method.label }}
+                  </mat-option>
+                </mat-select>
+                <mat-error *ngIf="methodControl.invalid">{{ requiredFieldText }}</mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label>Color model</mat-label>
+                <mat-select formControlName="colorModel">
+                  <mat-option *ngFor="let model of colorModels" [value]="model.value">
+                    {{ model.label }}
+                  </mat-option>
+                </mat-select>
+                <mat-error *ngIf="colorModelControl.invalid">{{ requiredFieldText }}</mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="fill">
+                <mat-label>Number of bins</mat-label>
+                <mat-select formControlName="binCount">
+                  <mat-option *ngFor="let count of binCounts" [value]="count">
+                    {{ count }}
+                  </mat-option>
+                </mat-select>
+                <mat-error *ngIf="binCountControl.invalid">{{ requiredFieldText }}</mat-error>
+              </mat-form-field>
+            </div>
+
+            <div class="upload-image-card__form--row">
+              <mat-form-field appearance="fill" *ngIf="methodControl.value === ComparisonMethod.MINKOWSKI">
+                <mat-label>Minkowski parameter</mat-label>
+                <input matInput formControlName="minkowskiParameter">
+                <mat-error *ngIf="minkowskiParameterControl.invalid">{{ requiredFieldText }}</mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="fill" *ngIf="methodControl.value === ComparisonMethod.WEIGHTED_EUCLIDEAN">
+                <mat-label>Weighted model</mat-label>
+                <mat-select formControlName="weightedModel">
+                  <mat-option *ngFor="let model of weightedModels" [value]="model.value">
+                    {{ model.label }}
+                  </mat-option>
+                </mat-select>
+                <mat-error *ngIf="weightedModelControl.invalid">{{ requiredFieldText }}</mat-error>
+              </mat-form-field>
+
+              <mat-form-field appearance="fill" *ngIf="methodControl.value === ComparisonMethod.QUADRATIC_FORM">
+                <mat-label>Weights model</mat-label>
+                <mat-select formControlName="quadraticFormModel">
+                  <mat-option *ngFor="let model of quadraticFormModels" [value]="model.value">
+                    {{ model.label }}
+                  </mat-option>
+                </mat-select>
+                <mat-error *ngIf="quadraticFormModelControl.invalid">{{ requiredFieldText }}</mat-error>
+              </mat-form-field>
+            </div>
+          </div>
+        </form>
+
+        <mat-divider></mat-divider>
+
+        <div class="upload-image-card__image-overview">
+          <img [src]="file.image" *ngIf="file">
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <mat-card-actions>
+          <button mat-button (click)="onSubmitClicked()" [disabled]="isLoading || form.invalid || !file">Submit</button>
+        </mat-card-actions>
+      </mat-card>
+
+      <mat-card class="child-card results-card">
+        <mat-card-content>
+          <div class="child-card__header">
+            <h2>Results</h2>
+            <mat-icon
+              *ngIf="!!results?.length"
+              matTooltip="Results are sorted based on the given parameters from the most similar image to the least similar image."
+              matTooltipPosition="before">
+              help_outline
+            </mat-icon>
+          </div>
+        </mat-card-content>
+
+        <mat-divider></mat-divider>
+
+        <mat-spinner *ngIf="isLoading; else resultsLoaded"></mat-spinner>
+        <ng-template #resultsLoaded>
+          <div class="results-card__container" *ngIf="!isLoading">
+            <mat-card *ngFor="let result of results; index as i">
+              <mat-card-content>
+                <div class="child-card__header">
+                  <mat-icon *ngIf="i+1 < 10; else result10">filter_{{ i+1 }}</mat-icon>
+                  <ng-template #result10>
+                    <mat-icon>filter_9_plus</mat-icon>
+                  </ng-template>
+                  <div class="results-card__header-score">
+                    <mat-icon>poll</mat-icon>
+                    <span>{{ result?.score | number: '1.0-8' }}</span>
+                  </div>
+                </div>
+              </mat-card-content>
+
+              <mat-divider></mat-divider>
+
+              <div class="results-card__container--image-overview">
+                <img [src]="result?.image">
+              </div>
+            </mat-card>
+          </div>
+        </ng-template>
+      </mat-card>
+    </div>
+  </mat-card>
+</div>

@@ -56,10 +56,12 @@ export class AppComponent implements OnInit {
       { value: ComparisonMethod.BHATTACHARYYA, label: 'Bhattacharyya' }
     ];
     this.weightedModels = [
-      { value: 'amplify_green', label: 'Amplify Green' }
+      { value: 'amplify_green', label: 'Amplify Green' },
+      { value: 'amplify_blue', label: 'Amplify Blue' },
+      { value: 'amplify_red', label: 'Amplify Red' },
     ];
     this.quadraticFormModels = [
-      { value: 'amplify_green', label: 'Amplify Green' }
+      { value: 'correlated_rgb', label: 'Correlated RGB' }
     ];
     this.colorModels = [
       { value: ColorModel.RGB, label: 'RGB' },
